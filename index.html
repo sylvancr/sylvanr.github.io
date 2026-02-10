@@ -66,8 +66,14 @@
       font-weight: 400;
       letter-spacing: 0.25em;
       text-transform: uppercase;
-      margin-bottom: 2.5rem;
       text-shadow: 0 2px 20px rgba(0, 0, 0, 0.6);
+      cursor: pointer;
+      transition: opacity 0.6s ease;
+    }
+
+    .name.hidden {
+      opacity: 0;
+      pointer-events: none;
     }
 
     .links {
@@ -75,6 +81,15 @@
       flex-direction: column;
       gap: 1.25rem;
       align-items: center;
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.6s ease;
+    }
+
+    .links.visible {
+      opacity: 1;
+      pointer-events: auto;
     }
 
     .links a {
@@ -109,13 +124,35 @@
 
   <!-- Content -->
   <div class="content">
-    <h1 class="name">Sylvan Rackham</h1>
-    <nav class="links">
+    <h1 class="name" id="name">Sylvan Rackham</h1>
+    <nav class="links" id="links">
       <a href="https://restlessegg.com" target="_blank" rel="noopener">Restless Egg</a>
       <a href="https://www.linkedin.com/in/sylvanr/" target="_blank" rel="noopener">Work</a>
       <a href="https://www.instagram.com/sylvanr/" target="_blank" rel="noopener">Life</a>
     </nav>
   </div>
+
+  <script>
+    const name = document.getElementById('name');
+    const links = document.getElementById('links');
+    let open = false;
+
+    name.addEventListener('click', () => {
+      open = true;
+      name.classList.add('hidden');
+      setTimeout(() => links.classList.add('visible'), 300);
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!open) return;
+      if (e.target.closest('#links') || e.target.closest('#name')) return;
+      links.classList.remove('visible');
+      setTimeout(() => {
+        name.classList.remove('hidden');
+        open = false;
+      }, 300);
+    });
+  </script>
 
 </body>
 </html>
