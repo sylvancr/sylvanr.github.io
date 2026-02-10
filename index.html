@@ -122,6 +122,27 @@
   <!-- Dark overlay -->
   <div class="video-overlay"></div>
 
+  <!-- Line overlay -->
+  <svg class="line-overlay" id="lineOverlay" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <style>
+        .line-overlay {
+          position: fixed;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          z-index: 1;
+          pointer-events: none;
+          opacity: 0.12;
+        }
+        .line-overlay path, .line-overlay circle {
+          fill: none;
+          stroke: #fff;
+        }
+      </style>
+    </defs>
+  </svg>
+
   <!-- Content -->
   <div class="content">
     <h1 class="name" id="name">Sylvan Rackham</h1>
@@ -133,24 +154,245 @@
   </div>
 
   <script>
-    const name = document.getElementById('name');
-    const links = document.getElementById('links');
-    let open = false;
+    const nameEl = document.getElementById('name');
+    const linksEl = document.getElementById('links');
+    const svg = document.getElementById('lineOverlay');
+    const NS = 'http://www.w3.org/2000/svg';
+    let menuOpen = false;
+    let morphing = false;
 
-    name.addEventListener('click', () => {
-      open = true;
-      name.classList.add('hidden');
-      setTimeout(() => links.classList.add('visible'), 300);
+    // ── Name / links toggle ──
+    nameEl.addEventListener('click', () => {
+      menuOpen = true;
+      nameEl.classList.add('hidden');
+      setTimeout(() => linksEl.classList.add('visible'), 300);
     });
 
+    // ── Helpers ──
+    const r = (lo, hi) => lo + Math.random() * (hi - lo);
+    const ri = (lo, hi) => Math.floor(r(lo, hi));
+    const lerp = (a, b, t) => a + (b - a) * t;
+    const ease = t => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+
+    // ── Generate a full configuration ──
+    function generateConfig() {
+      const curves = [];
+      const circles = [];
+
+      // Petal loops — scattered origins
+      for (let i = 0; i < ri(4, 7); i++) {
+        const ox = r(200, 800), oy = r(500, 900);
+        const spread = r(150, 400);
+        const dir = r(0, Math.PI * 2);
+        const mx = ox + Math.cos(dir) * spread;
+        const my = oy + Math.sin(dir) * spread;
+        const apex = r(40, 300);
+        curves.push({
+          nums: [
+            ox, oy,
+            ox + r(-200, 200), oy + r(-300, -100),
+            mx + r(-100, 100), my + r(-150, 50),
+            mx, my,
+            mx + r(-80, 80), my + r(-80, 80),
+            ox + r(-60, 60), oy + r(-80, 80),
+            ox + r(-30, 30), oy + r(-30, 30)
+          ],
+          sw: r(0.5, 0.9), dash: ''
+        });
+      }
+
+      // Open arcs drifting off edges
+      for (let i = 0; i < ri(5, 8); i++) {
+        const ox = r(100, 900), oy = r(400, 900);
+        const ex = ox + r(200, 600) * (Math.random() > 0.5 ? 1 : -1);
+        const ey = oy + r(-400, -50);
+        curves.push({
+          nums: [ox, oy, r(0, 1000), r(0, 800), r(0, 1000), r(0, 600), ex, ey],
+          sw: r(0.3, 0.6), dash: ''
+        });
+      }
+
+      // Dashed delicate arcs
+      for (let i = 0; i < ri(3, 6); i++) {
+        const cx = r(50, 950), cy = r(50, 950);
+        const span = r(80, 250);
+        curves.push({
+          nums: [
+            cx - span, cy + r(-80, 80),
+            cx + r(-60, 60), cy + r(-span, -30),
+            cx + r(-60, 60), cy + r(30, span),
+            cx + span, cy + r(-80, 80)
+          ],
+          sw: r(0.3, 0.5), dash: '4 3'
+        });
+      }
+
+      // Island clusters
+      const islandCount = ri(8, 13);
+      for (let i = 0; i < islandCount; i++) {
+        const cx = r(30, 970), cy = r(30, 970);
+        const count = ri(3, 7);
+        for (let j = 0; j < count; j++) {
+          circles.push({
+            cx: cx + r(-40, 40),
+            cy: cy + r(-40, 40),
+            radius: r(2, 6),
+            sw: r(0.3, 0.6)
+          });
+        }
+        // Thread within island
+        if (count >= 2) {
+          const a = circles[circles.length - 1];
+          const b = circles[circles.length - 2];
+          curves.push({
+            nums: [a.cx, a.cy, r(a.cx, b.cx), r(a.cy, b.cy), r(a.cx, b.cx), r(a.cy, b.cy), b.cx, b.cy],
+            sw: r(0.2, 0.4), dash: '2 3'
+          });
+        }
+      }
+
+      // Connecting threads across islands
+      for (let i = 0; i < ri(4, 7); i++) {
+        curves.push({
+          nums: [r(0, 1000), r(0, 1000), r(0, 1000), r(0, 1000), r(0, 1000), r(0, 1000), r(0, 1000), r(0, 1000)],
+          sw: r(0.2, 0.4), dash: '3 5'
+        });
+      }
+
+      // Sparse solo circles
+      for (let i = 0; i < ri(6, 12); i++) {
+        circles.push({
+          cx: r(20, 980), cy: r(20, 980),
+          radius: r(2, 5), sw: r(0.3, 0.5)
+        });
+      }
+
+      return { curves, circles };
+    }
+
+    // ── Build SVG elements once ──
+    const CURVE_COUNT = 35;
+    const CIRCLE_COUNT = 80;
+    const pathEls = [];
+    const circleEls = [];
+
+    for (let i = 0; i < CURVE_COUNT; i++) {
+      const p = document.createElementNS(NS, 'path');
+      p.setAttribute('stroke-width', '0.5');
+      svg.appendChild(p);
+      pathEls.push(p);
+    }
+    for (let i = 0; i < CIRCLE_COUNT; i++) {
+      const c = document.createElementNS(NS, 'circle');
+      c.setAttribute('r', '4');
+      c.setAttribute('stroke-width', '0.5');
+      svg.appendChild(c);
+      circleEls.push(c);
+    }
+
+    // ── Apply a config (no animation) ──
+    function applyConfig(cfg) {
+      for (let i = 0; i < CURVE_COUNT; i++) {
+        const c = cfg.curves[i % cfg.curves.length];
+        const n = c.nums;
+        const d = n.length === 14
+          ? `M ${n[0]} ${n[1]} C ${n[2]} ${n[3]}, ${n[4]} ${n[5]}, ${n[6]} ${n[7]} C ${n[8]} ${n[9]}, ${n[10]} ${n[11]}, ${n[12]} ${n[13]}`
+          : `M ${n[0]} ${n[1]} C ${n[2]} ${n[3]}, ${n[4]} ${n[5]}, ${n[6]} ${n[7]}`;
+        pathEls[i].setAttribute('d', d);
+        pathEls[i].setAttribute('stroke-width', c.sw);
+        pathEls[i].setAttribute('stroke-dasharray', c.dash);
+      }
+      for (let i = 0; i < CIRCLE_COUNT; i++) {
+        const c = cfg.circles[i % cfg.circles.length];
+        circleEls[i].setAttribute('cx', c.cx);
+        circleEls[i].setAttribute('cy', c.cy);
+        circleEls[i].setAttribute('r', c.radius);
+        circleEls[i].setAttribute('stroke-width', c.sw);
+      }
+    }
+
+    // ── Read current state ──
+    function readState() {
+      const curves = pathEls.map(p => {
+        const d = p.getAttribute('d') || '';
+        const nums = (d.match(/-?\d+\.?\d*/g) || []).map(Number);
+        return { nums, sw: parseFloat(p.getAttribute('stroke-width')), dash: p.getAttribute('stroke-dasharray') || '' };
+      });
+      const circles = circleEls.map(c => ({
+        cx: parseFloat(c.getAttribute('cx')),
+        cy: parseFloat(c.getAttribute('cy')),
+        radius: parseFloat(c.getAttribute('r')),
+        sw: parseFloat(c.getAttribute('stroke-width'))
+      }));
+      return { curves, circles };
+    }
+
+    // ── Morph between two states ──
+    function morph(from, to, duration) {
+      if (morphing) return;
+      morphing = true;
+      const start = performance.now();
+
+      function tick(now) {
+        const t = Math.min((now - start) / duration, 1);
+        const et = ease(t);
+
+        for (let i = 0; i < CURVE_COUNT; i++) {
+          const fc = from.curves[i], tc = to.curves[i % to.curves.length];
+          const len = Math.min(fc.nums.length, tc.nums.length);
+          const nums = [];
+          for (let j = 0; j < len; j++) nums.push(lerp(fc.nums[j], tc.nums[j], et));
+          const n = nums;
+          const d = n.length >= 14
+            ? `M ${n[0].toFixed(1)} ${n[1].toFixed(1)} C ${n[2].toFixed(1)} ${n[3].toFixed(1)}, ${n[4].toFixed(1)} ${n[5].toFixed(1)}, ${n[6].toFixed(1)} ${n[7].toFixed(1)} C ${n[8].toFixed(1)} ${n[9].toFixed(1)}, ${n[10].toFixed(1)} ${n[11].toFixed(1)}, ${n[12].toFixed(1)} ${n[13].toFixed(1)}`
+            : `M ${n[0].toFixed(1)} ${n[1].toFixed(1)} C ${n[2].toFixed(1)} ${n[3].toFixed(1)}, ${n[4].toFixed(1)} ${n[5].toFixed(1)}, ${n[6].toFixed(1)} ${n[7].toFixed(1)}`;
+          pathEls[i].setAttribute('d', d);
+          pathEls[i].setAttribute('stroke-width', lerp(fc.sw, tc.sw, et));
+          if (t >= 0.5) pathEls[i].setAttribute('stroke-dasharray', tc.dash);
+        }
+
+        for (let i = 0; i < CIRCLE_COUNT; i++) {
+          const fc = from.circles[i], tc = to.circles[i % to.circles.length];
+          circleEls[i].setAttribute('cx', lerp(fc.cx, tc.cx, et).toFixed(1));
+          circleEls[i].setAttribute('cy', lerp(fc.cy, tc.cy, et).toFixed(1));
+          circleEls[i].setAttribute('r', lerp(fc.radius, tc.radius, et).toFixed(1));
+        }
+
+        if (t < 1) requestAnimationFrame(tick);
+        else morphing = false;
+      }
+      requestAnimationFrame(tick);
+    }
+
+    // ── Init ──
+    const initial = generateConfig();
+    // Pad to fixed counts
+    while (initial.curves.length < CURVE_COUNT) initial.curves.push(initial.curves[initial.curves.length % initial.curves.length]);
+    while (initial.circles.length < CIRCLE_COUNT) initial.circles.push(initial.circles[initial.circles.length % initial.circles.length]);
+    applyConfig(initial);
+
+    // ── Click to morph ──
     document.addEventListener('click', (e) => {
-      if (!open) return;
-      if (e.target.closest('#links') || e.target.closest('#name')) return;
-      links.classList.remove('visible');
-      setTimeout(() => {
-        name.classList.remove('hidden');
-        open = false;
-      }, 300);
+      // Handle name/links toggle
+      if (menuOpen && !e.target.closest('#links') && !e.target.closest('#name')) {
+        linksEl.classList.remove('visible');
+        setTimeout(() => { nameEl.classList.remove('hidden'); menuOpen = false; }, 300);
+      }
+
+      // Morph lines
+      if (morphing) return;
+      const from = readState();
+      const next = generateConfig();
+      while (next.curves.length < CURVE_COUNT) next.curves.push(next.curves[next.curves.length % next.curves.length]);
+      while (next.circles.length < CIRCLE_COUNT) next.circles.push(next.circles[next.circles.length % next.circles.length]);
+      // Normalize path num lengths to match current
+      for (let i = 0; i < CURVE_COUNT; i++) {
+        const fl = from.curves[i].nums.length;
+        const tl = next.curves[i].nums.length;
+        if (tl < fl) while (next.curves[i].nums.length < fl) next.curves[i].nums.push(next.curves[i].nums[next.curves[i].nums.length - 1]);
+        if (fl < tl) while (from.curves[i].nums.length < tl) from.curves[i].nums.push(from.curves[i].nums[from.curves[i].nums.length - 1]);
+      }
+      morph(from, next, 1800);
     });
   </script>
 
