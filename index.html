@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sylvan Rackham</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Inter:wght@300;400&display=swap');
+
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    /* ── Video background ── */
+    .video-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+    }
+
+    .video-bg video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Dark cinematic overlay */
+    .video-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      background: radial-gradient(
+        ellipse at center,
+        rgba(0, 0, 0, 0.35) 0%,
+        rgba(0, 0, 0, 0.65) 100%
+      );
+      pointer-events: none;
+    }
+
+    /* ── Content ── */
+    .content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      color: #fff;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .name {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: clamp(0.9rem, 2vw, 1.25rem);
+      font-weight: 400;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      margin-bottom: 2.5rem;
+      text-shadow: 0 2px 20px rgba(0, 0, 0, 0.6);
+    }
+
+    .links {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      align-items: center;
+    }
+
+    .links a {
+      color: rgba(255, 255, 255, 0.8);
+      text-decoration: none;
+      font-size: clamp(0.9rem, 2vw, 1.15rem);
+      font-weight: 300;
+      letter-spacing: 0.18em;
+      text-transform: lowercase;
+      padding: 0.5rem 1.5rem;
+      transition: all 0.4s ease;
+      text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
+    }
+
+    .links a:hover {
+      color: #fff;
+      text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Video background -->
+  <div class="video-bg">
+    <video autoplay muted loop playsinline>
+      <source src="background-bounce.mp4" type="video/mp4">
+    </video>
+  </div>
+
+  <!-- Dark overlay -->
+  <div class="video-overlay"></div>
+
+  <!-- Content -->
+  <div class="content">
+    <h1 class="name">Sylvan Rackham</h1>
+    <nav class="links">
+      <a href="https://restlessegg.com" target="_blank" rel="noopener">Restless Egg</a>
+      <a href="https://www.linkedin.com/in/sylvanr/" target="_blank" rel="noopener">Work</a>
+      <a href="https://www.instagram.com/sylvanr/" target="_blank" rel="noopener">Life</a>
+    </nav>
+  </div>
+
+</body>
+</html>
