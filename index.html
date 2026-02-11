@@ -33,6 +33,14 @@
       object-fit: cover;
     }
 
+    /* Hide default play button on iOS/Android */
+    .video-bg video::-webkit-media-controls {
+      display: none !important;
+    }
+    .video-bg video::-webkit-media-controls-start-playback-button {
+      display: none !important;
+    }
+
     /* Dark cinematic overlay */
     .video-overlay {
       position: fixed;
@@ -114,7 +122,7 @@
 
   <!-- Video background -->
   <div class="video-bg">
-    <video autoplay muted loop playsinline>
+    <video id="bgVideo" autoplay muted loop playsinline webkit-playsinline preload="auto">
       <source src="background-bounce.mp4" type="video/mp4">
     </video>
   </div>
@@ -154,6 +162,37 @@
   </div>
 
   <script>
+    // ── Force video autoplay on all devices ──
+    const vid = document.getElementById('bgVideo');
+    vid.muted = true;
+
+    function tryPlay() {
+      const p = vid.play();
+      if (p !== undefined) p.catch(() => {});
+    }
+
+    tryPlay();
+    document.addEventListener('DOMContentLoaded', tryPlay);
+    window.addEventListener('load', tryPlay);
+
+    // If autoplay was blocked, start on first user interaction
+    function playOnce() {
+      tryPlay();
+      if (!vid.paused) {
+        document.removeEventListener('touchstart', playOnce);
+        document.removeEventListener('click', playOnce);
+        document.removeEventListener('scroll', playOnce);
+      }
+    }
+    document.addEventListener('touchstart', playOnce, { once: false, passive: true });
+    document.addEventListener('click', playOnce);
+    document.addEventListener('scroll', playOnce, { passive: true });
+
+    // Re-trigger if page becomes visible again (e.g. tab switch)
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) tryPlay();
+    });
+
     const nameEl = document.getElementById('name');
     const linksEl = document.getElementById('links');
     const svg = document.getElementById('lineOverlay');
