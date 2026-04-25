@@ -20,6 +20,10 @@
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
 
+    body.modal-open {
+      overflow: hidden;
+    }
+
     /* ── Video background ── */
     .video-bg {
       position: fixed;
@@ -33,7 +37,6 @@
       object-fit: cover;
     }
 
-    /* Hide default play button on iOS/Android */
     .video-bg video::-webkit-media-controls {
       display: none !important;
     }
@@ -41,16 +44,17 @@
       display: none !important;
     }
 
-    /* Dark cinematic overlay */
     .video-overlay {
       position: fixed;
       inset: 0;
       z-index: 1;
-      background: radial-gradient(
-        ellipse at center,
-        rgba(0, 0, 0, 0.35) 0%,
-        rgba(0, 0, 0, 0.65) 100%
-      );
+      background:
+        radial-gradient(
+          ellipse at center,
+          rgba(20, 8, 0, 0.15) 0%,
+          rgba(0, 0, 0, 0.55) 70%,
+          rgba(0, 0, 0, 0.75) 100%
+        );
       pointer-events: none;
     }
 
@@ -62,10 +66,144 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 100vh;
+      min-height: 100vh;
       color: #fff;
       text-align: center;
       padding: 2rem;
+    }
+
+    /* ── Media modal ── */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      background: radial-gradient(
+        ellipse at center,
+        rgba(20, 8, 0, 0.78) 0%,
+        rgba(0, 0, 0, 0.92) 100%
+      );
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 1.4s cubic-bezier(0.22, 0.61, 0.36, 1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .modal-backdrop.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal {
+      position: relative;
+      width: 100%;
+      max-width: 680px;
+      max-height: 80vh;
+      overflow-y: auto;
+      padding: 3.75rem 2rem 2.5rem;
+      transform: translateY(20px);
+      filter: blur(2px);
+      opacity: 0;
+      transition:
+        transform 1.4s cubic-bezier(0.22, 0.61, 0.36, 1),
+        opacity 1.4s cubic-bezier(0.22, 0.61, 0.36, 1),
+        filter 1.6s cubic-bezier(0.22, 0.61, 0.36, 1);
+      text-align: center;
+    }
+
+    .modal-backdrop.visible .modal {
+      transform: translateY(0);
+      opacity: 1;
+      filter: blur(0);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      width: 2.25rem;
+      height: 2.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: none;
+      color: rgba(246, 230, 207, 0.55);
+      font-size: 1.1rem;
+      font-weight: 300;
+      cursor: pointer;
+      transition: color 0.6s ease, transform 0.6s ease;
+      line-height: 1;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      letter-spacing: 0.05em;
+    }
+
+    .modal-close:hover {
+      color: #fff3df;
+      transform: rotate(90deg);
+    }
+
+    .media-list {
+      list-style: none;
+      text-align: center;
+    }
+
+    .media-list li {
+      border-top: 1px solid rgba(246, 230, 207, 0.12);
+    }
+
+    .media-list li:last-child {
+      border-bottom: 1px solid rgba(246, 230, 207, 0.12);
+    }
+
+    .media-list a {
+      display: block;
+      padding: 1.4rem 0.5rem;
+      text-decoration: none;
+      color: rgba(246, 230, 207, 0.85);
+      transition: color 0.8s ease, opacity 0.8s ease;
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    .media-meta {
+      display: block;
+      font-size: clamp(0.65rem, 1.3vw, 0.75rem);
+      font-weight: 300;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(246, 230, 207, 0.55);
+      margin-bottom: 0.5rem;
+    }
+
+    .media-title {
+      display: block;
+      font-size: clamp(0.85rem, 1.7vw, 1rem);
+      font-weight: 300;
+      letter-spacing: 0.02em;
+    }
+
+    .media-list a:hover {
+      color: #fff3df;
+      opacity: 1;
+    }
+
+    .media-sep {
+      color: rgba(246, 230, 207, 0.4);
+      margin: 0 0.55em;
+    }
+
+    /* ── Stage ── */
+    .stage {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 2.5rem;
     }
 
     .name {
@@ -74,360 +212,372 @@
       font-weight: 400;
       letter-spacing: 0.25em;
       text-transform: uppercase;
-      text-shadow: 0 2px 20px rgba(0, 0, 0, 0.6);
-      cursor: pointer;
-      transition: opacity 0.6s ease;
+      color: #f6e6cf;
+      text-shadow:
+        0 0 18px rgba(255, 180, 110, 0.18),
+        0 0 38px rgba(255, 140, 70, 0.10),
+        0 2px 24px rgba(0, 0, 0, 0.55);
+      text-align: center;
+      opacity: 0;
+      filter: blur(8px);
+      transition:
+        opacity 3.2s cubic-bezier(0.22, 0.61, 0.36, 1),
+        filter 3.6s cubic-bezier(0.22, 0.61, 0.36, 1);
     }
 
-    .name.hidden {
-      opacity: 0;
-      pointer-events: none;
+    .name.name-fade-in {
+      opacity: 1;
+      filter: blur(0);
     }
 
     .links {
       display: flex;
       flex-direction: column;
-      gap: 1.25rem;
+      gap: 1.4rem;
       align-items: center;
-      position: absolute;
+      text-align: center;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.6s ease;
+      filter: blur(8px);
+      transition:
+        opacity 2.8s cubic-bezier(0.22, 0.61, 0.36, 1),
+        filter 3.0s cubic-bezier(0.22, 0.61, 0.36, 1);
     }
 
     .links.visible {
       opacity: 1;
       pointer-events: auto;
+      filter: blur(0);
     }
 
     .links a {
-      color: rgba(255, 255, 255, 0.8);
+      color: rgba(246, 230, 207, 0.78);
       text-decoration: none;
-      font-size: clamp(0.9rem, 2vw, 1.15rem);
+      font-size: clamp(0.9rem, 2vw, 1.05rem);
       font-weight: 300;
       letter-spacing: 0.18em;
       text-transform: lowercase;
-      padding: 0.5rem 1.5rem;
-      transition: all 0.4s ease;
+      padding: 0.4rem 1.5rem;
+      transition: color 0.6s ease, text-shadow 0.6s ease;
       text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
+      text-align: center;
+      cursor: pointer;
     }
 
     .links a:hover {
-      color: #fff;
-      text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+      color: #fff3df;
+      text-shadow:
+        0 0 14px rgba(255, 180, 110, 0.35),
+        0 0 28px rgba(255, 140, 70, 0.18);
+    }
+
+    /* ── Globe Loader (FADE ON REMERGE) ── */
+    .loader {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: ui-monospace, monospace;
+      transition: opacity 1.2s ease;
+    }
+    .loader.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .loader.removed {
+      display: none;
+    }
+
+    .loader-stage {
+      width: 200px;
+      height: 200px;
+      position: relative;
+    }
+    .loader .globe {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 120px;
+      height: 120px;
+      margin: -60px 0 0 -60px;
+      border-radius: 50%;
+      overflow: hidden;
+      transform-origin: center center;
+      will-change: transform, opacity;
+    }
+    .loader .globe svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    .loader .world {
+      width: 200%;
+      height: 100%;
+      animation: loader-spin 3.6s linear infinite;
+    }
+    @keyframes loader-spin {
+      from { transform: translateX(0%); }
+      to   { transform: translateX(-50%); }
+    }
+    .loader .lat-long {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .loader .g1 { animation: loader-split-1 2.6s ease-in-out forwards; }
+    .loader .g2 { animation: loader-split-2 2.6s ease-in-out forwards; }
+    .loader .g3 { animation: loader-split-3 2.6s ease-in-out forwards; }
+
+    /* Keyframes: Split -> Remerge -> Fade Out */
+    @keyframes loader-split-1 {
+      0%   { transform: translate(0, 0) scale(1); opacity: 1; }
+      30%  { transform: translate(0, 0) scale(1); opacity: 1; }
+      55%  { transform: translate(0, 0) scale(0.7); opacity: 1; }
+      80%  { transform: translate(0, 0) scale(0.9); opacity: 0.3; }
+      100% { transform: translate(0, 0) scale(1); opacity: 0; }
+    }
+    @keyframes loader-split-2 {
+      0%, 30% { transform: translate(0, 0) scale(1); opacity: 0; }
+      31%     { transform: translate(0, 0) scale(1); opacity: 1; }
+      55%     { transform: translate(-64px, 0) scale(0.7); opacity: 1; }
+      100%    { transform: translate(0, 0) scale(1); opacity: 0; }
+    }
+    @keyframes loader-split-3 {
+      0%, 30% { transform: translate(0, 0) scale(1); opacity: 0; }
+      31%     { transform: translate(0, 0) scale(1); opacity: 1; }
+      55%     { transform: translate(64px, 0) scale(0.7); opacity: 1; }
+      100%    { transform: translate(0, 0) scale(1); opacity: 0; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Video background -->
+  <div class="loader" id="loader" aria-hidden="true">
+    <div class="loader-stage">
+      <svg width="0" height="0" style="position:absolute;">
+        <defs>
+          <clipPath id="globeClip" clipPathUnits="userSpaceOnUse">
+            <circle cx="60" cy="60" r="58" />
+          </clipPath>
+          <g id="worldMap">
+            <rect x="0" y="0" width="360" height="180" fill="#000" />
+            <path fill="#fff" d="M40,42 L72,38 L98,40 L112,52 L120,68 L108,80 L96,88 L82,92 L70,86 L58,78 L46,68 L36,56 Z M82,96 L92,100 L88,108 L78,104 Z" />
+            <path fill="#fff" d="M132,28 L150,30 L156,42 L148,52 L136,48 L130,38 Z" />
+            <path fill="#fff" d="M104,108 L118,110 L124,124 L122,142 L114,156 L104,160 L98,148 L96,132 L100,118 Z" />
+            <path fill="#fff" d="M170,46 L190,42 L204,48 L200,58 L186,62 L174,58 L166,54 Z" />
+            <path fill="#fff" d="M176,72 L200,70 L216,78 L218,96 L210,118 L198,134 L186,138 L178,124 L172,108 L170,90 Z" />
+            <path fill="#fff" d="M212,76 L228,74 L232,86 L224,94 L214,90 Z" />
+            <path fill="#fff" d="M210,46 L246,40 L278,42 L300,48 L312,58 L308,72 L290,80 L266,82 L242,78 L222,72 L210,62 Z" />
+            <path fill="#fff" d="M248,82 L262,82 L266,98 L258,108 L250,100 Z" />
+            <path fill="#fff" d="M286,86 L302,88 L308,98 L296,104 L286,98 Z" />
+            <path fill="#fff" d="M296,110 L320,112 L322,120 L302,118 Z" />
+            <path fill="#fff" d="M318,60 L326,58 L330,66 L324,72 L320,68 Z" />
+            <path fill="#fff" d="M298,128 L324,126 L334,134 L328,146 L312,148 L300,142 Z" />
+            <path fill="#fff" d="M340,146 L348,148 L348,156 L340,156 Z" />
+            <path fill="#fff" d="M168,42 L172,40 L174,46 L170,48 Z" />
+            <path fill="#fff" d="M222,118 L228,120 L228,132 L222,132 Z" />
+          </g>
+        </defs>
+      </svg>
+      <div class="globe g1">
+        <svg viewBox="0 0 120 120" preserveAspectRatio="xMidYMid slice">
+          <circle cx="60" cy="60" r="58" fill="#000" />
+          <g clip-path="url(#globeClip)">
+            <g class="world">
+              <use href="#worldMap" transform="scale(0.333,0.638) translate(0,4)" />
+              <use href="#worldMap" transform="scale(0.333,0.638) translate(360,4)" />
+            </g>
+            <g class="lat-long" stroke="#fff" stroke-width="0.6" fill="none" opacity="0.55">
+              <ellipse cx="60" cy="60" rx="58" ry="58" /><ellipse cx="60" cy="60" rx="58" ry="20" /><ellipse cx="60" cy="60" rx="58" ry="40" /><ellipse cx="60" cy="60" rx="20" ry="58" /><ellipse cx="60" cy="60" rx="40" ry="58" /><line x1="2" y1="60" x2="118" y2="60" /><line x1="60" y1="2" x2="60" y2="118" />
+            </g>
+          </g>
+        </svg>
+      </div>
+      <div class="globe g2">
+        <svg viewBox="0 0 120 120" preserveAspectRatio="xMidYMid slice">
+          <circle cx="60" cy="60" r="58" fill="#000" />
+          <g clip-path="url(#globeClip)">
+            <g class="world">
+              <use href="#worldMap" transform="scale(0.333,0.638) translate(0,4)" />
+              <use href="#worldMap" transform="scale(0.333,0.638) translate(360,4)" />
+            </g>
+            <g class="lat-long" stroke="#fff" stroke-width="0.6" fill="none" opacity="0.55">
+              <ellipse cx="60" cy="60" rx="58" ry="58" /><ellipse cx="60" cy="60" rx="58" ry="20" /><ellipse cx="60" cy="60" rx="58" ry="40" /><ellipse cx="60" cy="60" rx="20" ry="58" /><ellipse cx="60" cy="60" rx="40" ry="58" /><line x1="2" y1="60" x2="118" y2="60" /><line x1="60" y1="2" x2="60" y2="118" />
+            </g>
+          </g>
+        </svg>
+      </div>
+      <div class="globe g3">
+        <svg viewBox="0 0 120 120" preserveAspectRatio="xMidYMid slice">
+          <circle cx="60" cy="60" r="58" fill="#000" />
+          <g clip-path="url(#globeClip)">
+            <g class="world">
+              <use href="#worldMap" transform="scale(0.333,0.638) translate(0,4)" />
+              <use href="#worldMap" transform="scale(0.333,0.638) translate(360,4)" />
+            </g>
+            <g class="lat-long" stroke="#fff" stroke-width="0.6" fill="none" opacity="0.55">
+              <ellipse cx="60" cy="60" rx="58" ry="58" /><ellipse cx="60" cy="60" rx="58" ry="20" /><ellipse cx="60" cy="60" rx="58" ry="40" /><ellipse cx="60" cy="60" rx="20" ry="58" /><ellipse cx="60" cy="60" rx="40" ry="58" /><line x1="2" y1="60" x2="118" y2="60" /><line x1="60" y1="2" x2="60" y2="118" />
+            </g>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </div>
+
   <div class="video-bg">
     <video id="bgVideo" autoplay muted loop playsinline webkit-playsinline preload="auto">
       <source src="background-bounce.mp4" type="video/mp4">
     </video>
   </div>
 
-  <!-- Dark overlay -->
   <div class="video-overlay"></div>
 
-  <!-- Line overlay -->
   <svg class="line-overlay" id="lineOverlay" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
     <defs>
       <style>
-        .line-overlay {
-          position: fixed;
-          inset: 0;
-          width: 100%;
-          height: 100%;
-          z-index: 1;
-          pointer-events: none;
-          opacity: 0.12;
-        }
-        .line-overlay path, .line-overlay circle {
-          fill: none;
-          stroke: #fff;
-        }
+        .line-overlay { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; opacity: 0.09; }
+        .line-overlay path, .line-overlay circle { fill: none; stroke: #f6e6cf; }
       </style>
     </defs>
   </svg>
 
-  <!-- Content -->
   <div class="content">
-    <h1 class="name" id="name">Sylvan Rackham</h1>
-    <nav class="links" id="links">
-      <a href="https://restlessegg.com" target="_blank" rel="noopener">Restless Egg</a>
-      <a href="https://www.linkedin.com/in/sylvanr/" target="_blank" rel="noopener">Work</a>
-      <a href="https://www.instagram.com/sylvanr/" target="_blank" rel="noopener">Life</a>
-    </nav>
+    <div class="stage">
+      <h1 class="name" id="name">Sylvan Rackham</h1>
+      <nav class="links" id="links">
+        <a href="#" id="mediaToggle">Selected Media</a>
+        <a href="https://www.instagram.com/sylvanr/" target="_blank" rel="noopener">Life</a>
+        <a href="https://restlessegg.com" target="_blank" rel="noopener">Restless Egg</a>
+      </nav>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="mediaBackdrop" role="dialog" aria-modal="true" aria-label="Selected Media" aria-hidden="true">
+    <div class="modal" id="mediaModal">
+      <button class="modal-close" id="mediaClose" aria-label="Close">✕</button>
+      <ul class="media-list">
+        <li><a href="https://spikeartmagazine.com/articles/news-spike-87-everythings-computer-out-now" target="_blank" rel="noopener"><span class="media-meta">Spike Art Magazine<span class="media-sep">—</span>Apr 2026</span><span class="media-title">Spike #87: Everything's Computer</span></a></li>
+        <li><a href="https://www.dazeddigital.com/art-photography/article/69674/1/radically-rethink-what-means-to-make-art-restless-egg-technology-berlin-deepmind" target="_blank" rel="noopener"><span class="media-meta">Dazed<span class="media-sep">—</span>Feb 2026</span><span class="media-title">This collective is radically rethinking what it means to make art</span></a></li>
+        <li><a href="https://www.mozillafoundation.org/en/nothing-personal/the-post-naive-internet-era/" target="_blank" rel="noopener"><span class="media-meta">Mozilla Foundation<span class="media-sep">—</span>Oct 2025</span><span class="media-title">Welcome to the Post-Naive Internet Era</span></a></li>
+        <li><a href="https://open.spotify.com/episode/6dQpidIBahtnXVgLoyWMyM?si=8d517a191c034f27" target="_blank" rel="noopener"><span class="media-meta">Humans in the Loop<span class="media-sep">—</span>Aug 2025</span><span class="media-title">Artist founders and figuring out what AI is really for</span></a></li>
+        <li><a href="https://reader.futureartecosystems.org/briefing/fae5" target="_blank" rel="noopener"><span class="media-meta">Serpentine / Future Art Ecosystems<span class="media-sep">—</span>Jun 2025</span><span class="media-title">Art x Creative R&D</span></a></li>
+      </ul>
+    </div>
   </div>
 
   <script>
-    // ── Force video autoplay on all devices ──
     const vid = document.getElementById('bgVideo');
     vid.muted = true;
-
-    function tryPlay() {
-      const p = vid.play();
-      if (p !== undefined) p.catch(() => {});
-    }
-
+    function tryPlay() { const p = vid.play(); if (p !== undefined) p.catch(() => {}); }
     tryPlay();
     document.addEventListener('DOMContentLoaded', tryPlay);
-    window.addEventListener('load', tryPlay);
-
-    // If autoplay was blocked, start on first user interaction
-    function playOnce() {
-      tryPlay();
-      if (!vid.paused) {
-        document.removeEventListener('touchstart', playOnce);
-        document.removeEventListener('click', playOnce);
-        document.removeEventListener('scroll', playOnce);
-      }
-    }
-    document.addEventListener('touchstart', playOnce, { once: false, passive: true });
-    document.addEventListener('click', playOnce);
-    document.addEventListener('scroll', playOnce, { passive: true });
-
-    // Re-trigger if page becomes visible again (e.g. tab switch)
-    document.addEventListener('visibilitychange', () => {
-      if (!document.hidden) tryPlay();
-    });
 
     const nameEl = document.getElementById('name');
     const linksEl = document.getElementById('links');
     const svg = document.getElementById('lineOverlay');
     const NS = 'http://www.w3.org/2000/svg';
-    let menuOpen = false;
     let morphing = false;
 
-    // ── Name / links toggle ──
-    nameEl.addEventListener('click', () => {
-      menuOpen = true;
-      nameEl.classList.add('hidden');
-      setTimeout(() => linksEl.classList.add('visible'), 300);
-    });
+    const mediaToggle = document.getElementById('mediaToggle');
+    const mediaBackdrop = document.getElementById('mediaBackdrop');
+    const mediaClose = document.getElementById('mediaClose');
+    let mediaOpen = false;
 
-    // ── Helpers ──
+    // ── Loader Reveal Logic ──
+    const loaderEl = document.getElementById('loader');
+    const LOADER_DURATION = 2200; // Trigger fade-out just as globes start converging
+    const LOADER_FADE = 1200;
+
+    setTimeout(() => {
+      loaderEl.classList.add('fade-out');
+      setTimeout(() => {
+        nameEl.classList.add('name-fade-in');
+        linksEl.classList.add('visible');
+      }, 200);
+      setTimeout(() => { loaderEl.classList.add('removed'); }, LOADER_FADE);
+    }, LOADER_DURATION);
+
+    function openMedia() { mediaOpen = true; mediaBackdrop.classList.add('visible'); document.body.classList.add('modal-open'); }
+    function closeMedia() { mediaOpen = false; mediaBackdrop.classList.remove('visible'); document.body.classList.remove('modal-open'); }
+    mediaToggle.addEventListener('click', (e) => { e.preventDefault(); openMedia(); });
+    mediaClose.addEventListener('click', (e) => { e.preventDefault(); closeMedia(); });
+    mediaBackdrop.addEventListener('click', (e) => { if (e.target === mediaBackdrop) closeMedia(); });
+
+    // ── Morphing Helpers ──
     const r = (lo, hi) => lo + Math.random() * (hi - lo);
     const ri = (lo, hi) => Math.floor(r(lo, hi));
     const lerp = (a, b, t) => a + (b - a) * t;
     const ease = t => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
 
-    // ── Generate a full configuration ──
     function generateConfig() {
-      const curves = [];
-      const circles = [];
-
-      // Petal loops — scattered origins
+      const curves = []; const circles = [];
       for (let i = 0; i < ri(4, 7); i++) {
-        const ox = r(200, 800), oy = r(500, 900);
-        const spread = r(150, 400);
-        const dir = r(0, Math.PI * 2);
-        const mx = ox + Math.cos(dir) * spread;
-        const my = oy + Math.sin(dir) * spread;
-        const apex = r(40, 300);
-        curves.push({
-          nums: [
-            ox, oy,
-            ox + r(-200, 200), oy + r(-300, -100),
-            mx + r(-100, 100), my + r(-150, 50),
-            mx, my,
-            mx + r(-80, 80), my + r(-80, 80),
-            ox + r(-60, 60), oy + r(-80, 80),
-            ox + r(-30, 30), oy + r(-30, 30)
-          ],
-          sw: r(0.5, 0.9), dash: ''
-        });
+        const ox = r(200, 800), oy = r(500, 900); const spread = r(150, 400); const dir = r(0, Math.PI * 2);
+        const mx = ox + Math.cos(dir) * spread; const my = oy + Math.sin(dir) * spread;
+        curves.push({ nums: [ox, oy, ox + r(-200, 200), oy + r(-300, -100), mx + r(-100, 100), my + r(-150, 50), mx, my, mx + r(-80, 80), my + r(-80, 80), ox + r(-60, 60), oy + r(-80, 80), ox + r(-30, 30), oy + r(-30, 30) ], sw: r(0.5, 0.9), dash: '' });
       }
-
-      // Open arcs drifting off edges
-      for (let i = 0; i < ri(5, 8); i++) {
-        const ox = r(100, 900), oy = r(400, 900);
-        const ex = ox + r(200, 600) * (Math.random() > 0.5 ? 1 : -1);
-        const ey = oy + r(-400, -50);
-        curves.push({
-          nums: [ox, oy, r(0, 1000), r(0, 800), r(0, 1000), r(0, 600), ex, ey],
-          sw: r(0.3, 0.6), dash: ''
-        });
-      }
-
-      // Dashed delicate arcs
-      for (let i = 0; i < ri(3, 6); i++) {
-        const cx = r(50, 950), cy = r(50, 950);
-        const span = r(80, 250);
-        curves.push({
-          nums: [
-            cx - span, cy + r(-80, 80),
-            cx + r(-60, 60), cy + r(-span, -30),
-            cx + r(-60, 60), cy + r(30, span),
-            cx + span, cy + r(-80, 80)
-          ],
-          sw: r(0.3, 0.5), dash: '4 3'
-        });
-      }
-
-      // Island clusters
-      const islandCount = ri(8, 13);
-      for (let i = 0; i < islandCount; i++) {
-        const cx = r(30, 970), cy = r(30, 970);
-        const count = ri(3, 7);
-        for (let j = 0; j < count; j++) {
-          circles.push({
-            cx: cx + r(-40, 40),
-            cy: cy + r(-40, 40),
-            radius: r(2, 6),
-            sw: r(0.3, 0.6)
-          });
-        }
-        // Thread within island
-        if (count >= 2) {
-          const a = circles[circles.length - 1];
-          const b = circles[circles.length - 2];
-          curves.push({
-            nums: [a.cx, a.cy, r(a.cx, b.cx), r(a.cy, b.cy), r(a.cx, b.cx), r(a.cy, b.cy), b.cx, b.cy],
-            sw: r(0.2, 0.4), dash: '2 3'
-          });
-        }
-      }
-
-      // Connecting threads across islands
-      for (let i = 0; i < ri(4, 7); i++) {
-        curves.push({
-          nums: [r(0, 1000), r(0, 1000), r(0, 1000), r(0, 1000), r(0, 1000), r(0, 1000), r(0, 1000), r(0, 1000)],
-          sw: r(0.2, 0.4), dash: '3 5'
-        });
-      }
-
-      // Sparse solo circles
-      for (let i = 0; i < ri(6, 12); i++) {
-        circles.push({
-          cx: r(20, 980), cy: r(20, 980),
-          radius: r(2, 5), sw: r(0.3, 0.5)
-        });
-      }
-
+      for (let i = 0; i < ri(5, 8); i++) { const ox = r(100, 900), oy = r(400, 900); const ex = ox + r(200, 600) * (Math.random() > 0.5 ? 1 : -1); const ey = oy + r(-400, -50); curves.push({ nums: [ox, oy, r(0, 1000), r(0, 800), r(0, 1000), r(0, 600), ex, ey], sw: r(0.3, 0.6), dash: '' }); }
+      for (let i = 0; i < ri(6, 12); i++) { circles.push({ cx: r(20, 980), cy: r(20, 980), radius: r(2, 5), sw: r(0.3, 0.5) }); }
       return { curves, circles };
     }
 
-    // ── Build SVG elements once ──
-    const CURVE_COUNT = 35;
-    const CIRCLE_COUNT = 80;
-    const pathEls = [];
-    const circleEls = [];
+    const CURVE_COUNT = 35; const CIRCLE_COUNT = 80; const pathEls = []; const circleEls = [];
+    for (let i = 0; i < CURVE_COUNT; i++) { const p = document.createElementNS(NS, 'path'); p.setAttribute('stroke-width', '0.5'); svg.appendChild(p); pathEls.push(p); }
+    for (let i = 0; i < CIRCLE_COUNT; i++) { const c = document.createElementNS(NS, 'circle'); c.setAttribute('r', '4'); c.setAttribute('stroke-width', '0.5'); svg.appendChild(c); circleEls.push(c); }
 
-    for (let i = 0; i < CURVE_COUNT; i++) {
-      const p = document.createElementNS(NS, 'path');
-      p.setAttribute('stroke-width', '0.5');
-      svg.appendChild(p);
-      pathEls.push(p);
-    }
-    for (let i = 0; i < CIRCLE_COUNT; i++) {
-      const c = document.createElementNS(NS, 'circle');
-      c.setAttribute('r', '4');
-      c.setAttribute('stroke-width', '0.5');
-      svg.appendChild(c);
-      circleEls.push(c);
-    }
-
-    // ── Apply a config (no animation) ──
     function applyConfig(cfg) {
       for (let i = 0; i < CURVE_COUNT; i++) {
-        const c = cfg.curves[i % cfg.curves.length];
-        const n = c.nums;
-        const d = n.length === 14
-          ? `M ${n[0]} ${n[1]} C ${n[2]} ${n[3]}, ${n[4]} ${n[5]}, ${n[6]} ${n[7]} C ${n[8]} ${n[9]}, ${n[10]} ${n[11]}, ${n[12]} ${n[13]}`
-          : `M ${n[0]} ${n[1]} C ${n[2]} ${n[3]}, ${n[4]} ${n[5]}, ${n[6]} ${n[7]}`;
-        pathEls[i].setAttribute('d', d);
-        pathEls[i].setAttribute('stroke-width', c.sw);
-        pathEls[i].setAttribute('stroke-dasharray', c.dash);
+        const c = cfg.curves[i % cfg.curves.length]; const n = c.nums;
+        const d = n.length === 14 ? `M ${n[0]} ${n[1]} C ${n[2]} ${n[3]}, ${n[4]} ${n[5]}, ${n[6]} ${n[7]} C ${n[8]} ${n[9]}, ${n[10]} ${n[11]}, ${n[12]} ${n[13]}` : `M ${n[0]} ${n[1]} C ${n[2]} ${n[3]}, ${n[4]} ${n[5]}, ${n[6]} ${n[7]}`;
+        pathEls[i].setAttribute('d', d); pathEls[i].setAttribute('stroke-width', c.sw);
       }
       for (let i = 0; i < CIRCLE_COUNT; i++) {
         const c = cfg.circles[i % cfg.circles.length];
-        circleEls[i].setAttribute('cx', c.cx);
-        circleEls[i].setAttribute('cy', c.cy);
-        circleEls[i].setAttribute('r', c.radius);
-        circleEls[i].setAttribute('stroke-width', c.sw);
+        circleEls[i].setAttribute('cx', c.cx); circleEls[i].setAttribute('cy', c.cy); circleEls[i].setAttribute('r', c.radius);
       }
     }
 
-    // ── Read current state ──
     function readState() {
-      const curves = pathEls.map(p => {
-        const d = p.getAttribute('d') || '';
-        const nums = (d.match(/-?\d+\.?\d*/g) || []).map(Number);
-        return { nums, sw: parseFloat(p.getAttribute('stroke-width')), dash: p.getAttribute('stroke-dasharray') || '' };
-      });
-      const circles = circleEls.map(c => ({
-        cx: parseFloat(c.getAttribute('cx')),
-        cy: parseFloat(c.getAttribute('cy')),
-        radius: parseFloat(c.getAttribute('r')),
-        sw: parseFloat(c.getAttribute('stroke-width'))
-      }));
+      const curves = pathEls.map(p => { const d = p.getAttribute('d') || ''; const nums = (d.match(/-?\d+\.?\d*/g) || []).map(Number); return { nums, sw: parseFloat(p.getAttribute('stroke-width')), dash: p.getAttribute('stroke-dasharray') || '' }; });
+      const circles = circleEls.map(c => ({ cx: parseFloat(c.getAttribute('cx')), cy: parseFloat(c.getAttribute('cy')), radius: parseFloat(c.getAttribute('r')), sw: parseFloat(c.getAttribute('stroke-width')) }));
       return { curves, circles };
     }
 
-    // ── Morph between two states ──
     function morph(from, to, duration) {
-      if (morphing) return;
-      morphing = true;
-      const start = performance.now();
-
+      if (morphing) return; morphing = true; const start = performance.now();
       function tick(now) {
-        const t = Math.min((now - start) / duration, 1);
-        const et = ease(t);
-
+        const t = Math.min((now - start) / duration, 1); const et = ease(t);
         for (let i = 0; i < CURVE_COUNT; i++) {
-          const fc = from.curves[i], tc = to.curves[i % to.curves.length];
-          const len = Math.min(fc.nums.length, tc.nums.length);
-          const nums = [];
+          const fc = from.curves[i], tc = to.curves[i % to.curves.length]; const len = Math.min(fc.nums.length, tc.nums.length); const nums = [];
           for (let j = 0; j < len; j++) nums.push(lerp(fc.nums[j], tc.nums[j], et));
-          const n = nums;
-          const d = n.length >= 14
-            ? `M ${n[0].toFixed(1)} ${n[1].toFixed(1)} C ${n[2].toFixed(1)} ${n[3].toFixed(1)}, ${n[4].toFixed(1)} ${n[5].toFixed(1)}, ${n[6].toFixed(1)} ${n[7].toFixed(1)} C ${n[8].toFixed(1)} ${n[9].toFixed(1)}, ${n[10].toFixed(1)} ${n[11].toFixed(1)}, ${n[12].toFixed(1)} ${n[13].toFixed(1)}`
-            : `M ${n[0].toFixed(1)} ${n[1].toFixed(1)} C ${n[2].toFixed(1)} ${n[3].toFixed(1)}, ${n[4].toFixed(1)} ${n[5].toFixed(1)}, ${n[6].toFixed(1)} ${n[7].toFixed(1)}`;
-          pathEls[i].setAttribute('d', d);
-          pathEls[i].setAttribute('stroke-width', lerp(fc.sw, tc.sw, et));
-          if (t >= 0.5) pathEls[i].setAttribute('stroke-dasharray', tc.dash);
+          const n = nums; const d = n.length >= 14 ? `M ${n[0].toFixed(1)} ${n[1].toFixed(1)} C ${n[2].toFixed(1)} ${n[3].toFixed(1)}, ${n[4].toFixed(1)} ${n[5].toFixed(1)}, ${n[6].toFixed(1)} ${n[7].toFixed(1)} C ${n[8].toFixed(1)} ${n[9].toFixed(1)}, ${n[10].toFixed(1)} ${n[11].toFixed(1)}, ${n[12].toFixed(1)} ${n[13].toFixed(1)}` : `M ${n[0].toFixed(1)} ${n[1].toFixed(1)} C ${n[2].toFixed(1)} ${n[3].toFixed(1)}, ${n[4].toFixed(1)} ${n[5].toFixed(1)}, ${n[6].toFixed(1)} ${n[7].toFixed(1)}`;
+          pathEls[i].setAttribute('d', d); pathEls[i].setAttribute('stroke-width', lerp(fc.sw, tc.sw, et));
         }
-
         for (let i = 0; i < CIRCLE_COUNT; i++) {
           const fc = from.circles[i], tc = to.circles[i % to.circles.length];
-          circleEls[i].setAttribute('cx', lerp(fc.cx, tc.cx, et).toFixed(1));
-          circleEls[i].setAttribute('cy', lerp(fc.cy, tc.cy, et).toFixed(1));
-          circleEls[i].setAttribute('r', lerp(fc.radius, tc.radius, et).toFixed(1));
+          circleEls[i].setAttribute('cx', lerp(fc.cx, tc.cx, et).toFixed(1)); circleEls[i].setAttribute('cy', lerp(fc.cy, tc.cy, et).toFixed(1)); circleEls[i].setAttribute('r', lerp(fc.radius, tc.radius, et).toFixed(1));
         }
-
-        if (t < 1) requestAnimationFrame(tick);
-        else morphing = false;
+        if (t < 1) requestAnimationFrame(tick); else morphing = false;
       }
       requestAnimationFrame(tick);
     }
 
-    // ── Init ──
     const initial = generateConfig();
-    // Pad to fixed counts
     while (initial.curves.length < CURVE_COUNT) initial.curves.push(initial.curves[initial.curves.length % initial.curves.length]);
     while (initial.circles.length < CIRCLE_COUNT) initial.circles.push(initial.circles[initial.circles.length % initial.circles.length]);
     applyConfig(initial);
 
-    // ── Click to morph ──
     document.addEventListener('click', (e) => {
-      // Handle name/links toggle
-      if (menuOpen && !e.target.closest('#links') && !e.target.closest('#name')) {
-        linksEl.classList.remove('visible');
-        setTimeout(() => { nameEl.classList.remove('hidden'); menuOpen = false; }, 300);
-      }
-
-      // Morph lines
-      if (morphing) return;
-      const from = readState();
-      const next = generateConfig();
+      if (mediaOpen || e.target.closest('.modal-backdrop') || morphing) return;
+      const from = readState(); const next = generateConfig();
       while (next.curves.length < CURVE_COUNT) next.curves.push(next.curves[next.curves.length % next.curves.length]);
       while (next.circles.length < CIRCLE_COUNT) next.circles.push(next.circles[next.circles.length % next.circles.length]);
-      // Normalize path num lengths to match current
       for (let i = 0; i < CURVE_COUNT; i++) {
-        const fl = from.curves[i].nums.length;
-        const tl = next.curves[i].nums.length;
+        const fl = from.curves[i].nums.length; const tl = next.curves[i].nums.length;
         if (tl < fl) while (next.curves[i].nums.length < fl) next.curves[i].nums.push(next.curves[i].nums[next.curves[i].nums.length - 1]);
         if (fl < tl) while (from.curves[i].nums.length < tl) from.curves[i].nums.push(from.curves[i].nums[from.curves[i].nums.length - 1]);
       }
