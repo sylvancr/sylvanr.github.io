@@ -219,15 +219,12 @@
         0 2px 24px rgba(0, 0, 0, 0.55);
       text-align: center;
       opacity: 0;
-      filter: blur(8px);
-      transition:
-        opacity 3.2s cubic-bezier(0.22, 0.61, 0.36, 1),
-        filter 3.6s cubic-bezier(0.22, 0.61, 0.36, 1);
+      /* Blur removed here */
+      transition: opacity 3.2s cubic-bezier(0.22, 0.61, 0.36, 1);
     }
 
     .name.name-fade-in {
       opacity: 1;
-      filter: blur(0);
     }
 
     .links {
@@ -238,16 +235,13 @@
       text-align: center;
       opacity: 0;
       pointer-events: none;
-      filter: blur(8px);
-      transition:
-        opacity 2.8s cubic-bezier(0.22, 0.61, 0.36, 1),
-        filter 3.0s cubic-bezier(0.22, 0.61, 0.36, 1);
+      /* Blur removed here */
+      transition: opacity 2.8s cubic-bezier(0.22, 0.61, 0.36, 1);
     }
 
     .links.visible {
       opacity: 1;
       pointer-events: auto;
-      filter: blur(0);
     }
 
     .links a {
@@ -271,7 +265,7 @@
         0 0 28px rgba(255, 140, 70, 0.18);
     }
 
-    /* ── Globe Loader (FADE ON REMERGE) ── */
+    /* ── Globe Loader ── */
     .loader {
       position: fixed;
       inset: 0;
@@ -332,7 +326,6 @@
     .loader .g2 { animation: loader-split-2 2.6s ease-in-out forwards; }
     .loader .g3 { animation: loader-split-3 2.6s ease-in-out forwards; }
 
-    /* Keyframes: Split -> Remerge -> Fade Out */
     @keyframes loader-split-1 {
       0%   { transform: translate(0, 0) scale(1); opacity: 1; }
       30%  { transform: translate(0, 0) scale(1); opacity: 1; }
@@ -489,7 +482,7 @@
 
     // ── Loader Reveal Logic ──
     const loaderEl = document.getElementById('loader');
-    const LOADER_DURATION = 2200; // Trigger fade-out just as globes start converging
+    const LOADER_DURATION = 2200; 
     const LOADER_FADE = 1200;
 
     setTimeout(() => {
