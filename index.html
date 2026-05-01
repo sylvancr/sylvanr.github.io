@@ -422,7 +422,7 @@
   </div>
 
   <div class="video-bg">
-    <video id="bgVideo" autoplay muted loop playsinline webkit-playsinline preload="auto">
+    <video id="bgVideo" autoplay muted loop playsinline webkit-playsinline preload="auto" disableremoteplayback x-webkit-airplay="deny">
       <source src="background-bounce.mp4" type="video/mp4">
     </video>
   </div>
@@ -465,9 +465,24 @@
   <script>
     const vid = document.getElementById('bgVideo');
     vid.muted = true;
+    vid.setAttribute('muted', ''); // iOS Safari requires the attribute, not just the property
     function tryPlay() { const p = vid.play(); if (p !== undefined) p.catch(() => {}); }
+
+    // Force a fresh load then play (helps when mobile browser hasn't buffered yet)
+    vid.load();
     tryPlay();
-    document.addEventListener('DOMContentLoaded', tryPlay);
+
+    // Retry at each buffering milestone — different mobile browsers surface these at different times
+    ['loadedmetadata', 'loadeddata', 'canplay', 'canplaythrough'].forEach(evt => {
+      vid.addEventListener(evt, () => { if (vid.paused) tryPlay(); });
+    });
+
+    // Persistent touch/click fallback — keeps retrying on any interaction, not just the first
+    document.addEventListener('touchstart', () => { if (vid.paused) tryPlay(); }, { passive: true });
+    document.addEventListener('click', () => { if (vid.paused) tryPlay(); });
+
+    // Resume if user returns to the tab
+    document.addEventListener('visibilitychange', () => { if (!document.hidden && vid.paused) tryPlay(); });
 
     const nameEl = document.getElementById('name');
     const linksEl = document.getElementById('links');
