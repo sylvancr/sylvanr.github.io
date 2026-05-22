@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Selected Media — Sylvan Rackham</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Inter:wght@300;400&display=swap');
+
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      min-height: 100%;
+      background: #000;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: #fff;
+    }
+
+    .content {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 5rem 2rem 6rem;
+    }
+
+    .back {
+      display: inline-block;
+      color: rgba(255, 255, 255, 0.4);
+      text-decoration: none;
+      font-size: 0.75rem;
+      font-weight: 300;
+      letter-spacing: 0.2em;
+      text-transform: lowercase;
+      margin-bottom: 4rem;
+      transition: color 0.3s ease;
+    }
+
+    .back:hover {
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    h1 {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: clamp(0.85rem, 2vw, 1.1rem);
+      font-weight: 400;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.5);
+      margin-bottom: 3.5rem;
+    }
+
+    .media-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .media-list li {
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .media-list li:last-child {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .media-list a {
+      display: flex;
+      align-items: baseline;
+      gap: 0;
+      padding: 1.25rem 0;
+      text-decoration: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .media-list a:hover {
+      opacity: 0.6;
+    }
+
+    .media-pub {
+      font-size: clamp(0.8rem, 1.8vw, 0.95rem);
+      font-weight: 300;
+      letter-spacing: 0.04em;
+      color: rgba(255, 255, 255, 0.85);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .media-date {
+      font-size: clamp(0.8rem, 1.8vw, 0.95rem);
+      font-weight: 300;
+      letter-spacing: 0.04em;
+      color: rgba(255, 255, 255, 0.85);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .media-title {
+      font-size: clamp(0.8rem, 1.8vw, 0.95rem);
+      font-weight: 300;
+      letter-spacing: 0.04em;
+      color: rgba(255, 255, 255, 0.85);
+      line-height: 1.5;
+    }
+
+    .sep {
+      color: rgba(255, 255, 255, 0.85);
+      margin: 0 0.6em;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="content">
+    <a href="index.html" class="back">← Sylvan Rackham</a>
+    <h1>Selected Media</h1>
+    <ul class="media-list">
+      <li>
+        <a href="https://spikeartmagazine.com/articles/news-spike-87-everythings-computer-out-now" target="_blank" rel="noopener">
+          <span class="media-pub">Spike Art Magazine</span><span class="sep">—</span><span class="media-date">Apr 2026</span><span class="sep">—</span><span class="media-title">Spike #87: Everything's Computer</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://www.dazeddigital.com/art-photography/article/69674/1/radically-rethink-what-means-to-make-art-restless-egg-technology-berlin-deepmind" target="_blank" rel="noopener">
+          <span class="media-pub">Dazed</span><span class="sep">—</span><span class="media-date">Feb 2026</span><span class="sep">—</span><span class="media-title">This collective is radically rethinking what it means to make art</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://www.mozillafoundation.org/en/nothing-personal/the-post-naive-internet-era/" target="_blank" rel="noopener">
+          <span class="media-pub">Mozilla Foundation</span><span class="sep">—</span><span class="media-date">Oct 2025</span><span class="sep">—</span><span class="media-title">Welcome to the Post-Naive Internet Era</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://open.spotify.com/episode/6dQpidIBahtnXVgLoyWMyM?si=8d517a191c034f27" target="_blank" rel="noopener">
+          <span class="media-pub">Humans in the Loop</span><span class="sep">—</span><span class="media-date">Aug 2025</span><span class="sep">—</span><span class="media-title">Artist founders and figuring out what AI is really for</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://reader.futureartecosystems.org/briefing/fae5" target="_blank" rel="noopener">
+          <span class="media-pub">Serpentine / Future Art Ecosystems</span><span class="sep">—</span><span class="media-date">Jun 2025</span><span class="sep">—</span><span class="media-title">Art x Creative R&D</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+</body>
+</html>
