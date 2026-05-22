@@ -222,9 +222,159 @@
       color: #fff;
       text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
     }
+
+    /* ── Globe Loader ── */
+    .loader {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 1.2s ease;
+    }
+    .loader.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .loader.removed {
+      display: none;
+    }
+    .loader-stage {
+      width: 200px;
+      height: 200px;
+      position: relative;
+    }
+    .loader .globe {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 120px;
+      height: 120px;
+      margin: -60px 0 0 -60px;
+      border-radius: 50%;
+      overflow: hidden;
+      transform-origin: center center;
+      will-change: transform, opacity;
+    }
+    .loader .globe svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    .loader .world {
+      width: 200%;
+      height: 100%;
+      animation: loader-spin 3.6s linear infinite;
+    }
+    @keyframes loader-spin {
+      from { transform: translateX(0%); }
+      to   { transform: translateX(-50%); }
+    }
+    .loader .lat-long {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+    .loader .g1 { animation: loader-split-1 2.6s ease-in-out forwards; }
+    .loader .g2 { animation: loader-split-2 2.6s ease-in-out forwards; }
+    .loader .g3 { animation: loader-split-3 2.6s ease-in-out forwards; }
+    @keyframes loader-split-1 {
+      0%   { transform: translate(0, 0) scale(1); opacity: 1; }
+      30%  { transform: translate(0, 0) scale(1); opacity: 1; }
+      55%  { transform: translate(0, 0) scale(0.7); opacity: 1; }
+      80%  { transform: translate(0, 0) scale(0.9); opacity: 0.3; }
+      100% { transform: translate(0, 0) scale(1); opacity: 0; }
+    }
+    @keyframes loader-split-2 {
+      0%, 30% { transform: translate(0, 0) scale(1); opacity: 0; }
+      31%     { transform: translate(0, 0) scale(1); opacity: 1; }
+      55%     { transform: translate(-64px, 0) scale(0.7); opacity: 1; }
+      100%    { transform: translate(0, 0) scale(1); opacity: 0; }
+    }
+    @keyframes loader-split-3 {
+      0%, 30% { transform: translate(0, 0) scale(1); opacity: 0; }
+      31%     { transform: translate(0, 0) scale(1); opacity: 1; }
+      55%     { transform: translate(64px, 0) scale(0.7); opacity: 1; }
+      100%    { transform: translate(0, 0) scale(1); opacity: 0; }
+    }
   </style>
 </head>
 <body>
+
+  <!-- Globe loader -->
+  <div class="loader" id="loader" aria-hidden="true">
+    <div class="loader-stage">
+      <svg width="0" height="0" style="position:absolute;">
+        <defs>
+          <clipPath id="globeClip" clipPathUnits="userSpaceOnUse">
+            <circle cx="60" cy="60" r="58" />
+          </clipPath>
+          <g id="worldMap">
+            <rect x="0" y="0" width="360" height="180" fill="#000" />
+            <path fill="#fff" d="M40,42 L72,38 L98,40 L112,52 L120,68 L108,80 L96,88 L82,92 L70,86 L58,78 L46,68 L36,56 Z M82,96 L92,100 L88,108 L78,104 Z" />
+            <path fill="#fff" d="M132,28 L150,30 L156,42 L148,52 L136,48 L130,38 Z" />
+            <path fill="#fff" d="M104,108 L118,110 L124,124 L122,142 L114,156 L104,160 L98,148 L96,132 L100,118 Z" />
+            <path fill="#fff" d="M170,46 L190,42 L204,48 L200,58 L186,62 L174,58 L166,54 Z" />
+            <path fill="#fff" d="M176,72 L200,70 L216,78 L218,96 L210,118 L198,134 L186,138 L178,124 L172,108 L170,90 Z" />
+            <path fill="#fff" d="M212,76 L228,74 L232,86 L224,94 L214,90 Z" />
+            <path fill="#fff" d="M210,46 L246,40 L278,42 L300,48 L312,58 L308,72 L290,80 L266,82 L242,78 L222,72 L210,62 Z" />
+            <path fill="#fff" d="M248,82 L262,82 L266,98 L258,108 L250,100 Z" />
+            <path fill="#fff" d="M286,86 L302,88 L308,98 L296,104 L286,98 Z" />
+            <path fill="#fff" d="M296,110 L320,112 L322,120 L302,118 Z" />
+            <path fill="#fff" d="M318,60 L326,58 L330,66 L324,72 L320,68 Z" />
+            <path fill="#fff" d="M298,128 L324,126 L334,134 L328,146 L312,148 L300,142 Z" />
+            <path fill="#fff" d="M340,146 L348,148 L348,156 L340,156 Z" />
+            <path fill="#fff" d="M168,42 L172,40 L174,46 L170,48 Z" />
+            <path fill="#fff" d="M222,118 L228,120 L228,132 L222,132 Z" />
+          </g>
+        </defs>
+      </svg>
+      <div class="globe g1">
+        <svg viewBox="0 0 120 120" preserveAspectRatio="xMidYMid slice">
+          <circle cx="60" cy="60" r="58" fill="#000" />
+          <g clip-path="url(#globeClip)">
+            <g class="world">
+              <use href="#worldMap" transform="scale(0.333,0.638) translate(0,4)" />
+              <use href="#worldMap" transform="scale(0.333,0.638) translate(360,4)" />
+            </g>
+            <g class="lat-long" stroke="#fff" stroke-width="0.6" fill="none" opacity="0.55">
+              <ellipse cx="60" cy="60" rx="58" ry="58" /><ellipse cx="60" cy="60" rx="58" ry="20" /><ellipse cx="60" cy="60" rx="58" ry="40" /><ellipse cx="60" cy="60" rx="20" ry="58" /><ellipse cx="60" cy="60" rx="40" ry="58" /><line x1="2" y1="60" x2="118" y2="60" /><line x1="60" y1="2" x2="60" y2="118" />
+            </g>
+          </g>
+        </svg>
+      </div>
+      <div class="globe g2">
+        <svg viewBox="0 0 120 120" preserveAspectRatio="xMidYMid slice">
+          <circle cx="60" cy="60" r="58" fill="#000" />
+          <g clip-path="url(#globeClip)">
+            <g class="world">
+              <use href="#worldMap" transform="scale(0.333,0.638) translate(0,4)" />
+              <use href="#worldMap" transform="scale(0.333,0.638) translate(360,4)" />
+            </g>
+            <g class="lat-long" stroke="#fff" stroke-width="0.6" fill="none" opacity="0.55">
+              <ellipse cx="60" cy="60" rx="58" ry="58" /><ellipse cx="60" cy="60" rx="58" ry="20" /><ellipse cx="60" cy="60" rx="58" ry="40" /><ellipse cx="60" cy="60" rx="20" ry="58" /><ellipse cx="60" cy="60" rx="40" ry="58" /><line x1="2" y1="60" x2="118" y2="60" /><line x1="60" y1="2" x2="60" y2="118" />
+            </g>
+          </g>
+        </svg>
+      </div>
+      <div class="globe g3">
+        <svg viewBox="0 0 120 120" preserveAspectRatio="xMidYMid slice">
+          <circle cx="60" cy="60" r="58" fill="#000" />
+          <g clip-path="url(#globeClip)">
+            <g class="world">
+              <use href="#worldMap" transform="scale(0.333,0.638) translate(0,4)" />
+              <use href="#worldMap" transform="scale(0.333,0.638) translate(360,4)" />
+            </g>
+            <g class="lat-long" stroke="#fff" stroke-width="0.6" fill="none" opacity="0.55">
+              <ellipse cx="60" cy="60" rx="58" ry="58" /><ellipse cx="60" cy="60" rx="58" ry="20" /><ellipse cx="60" cy="60" rx="58" ry="40" /><ellipse cx="60" cy="60" rx="20" ry="58" /><ellipse cx="60" cy="60" rx="40" ry="58" /><line x1="2" y1="60" x2="118" y2="60" /><line x1="60" y1="2" x2="60" y2="118" />
+            </g>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </div>
 
   <!-- Video background -->
   <div class="video-bg">
@@ -326,6 +476,13 @@
     const mediaSection = document.getElementById('mediaSection');
     const mediaClose = document.getElementById('mediaClose');
     let mediaOpen = false;
+
+    // ── Loader ──
+    const loaderEl = document.getElementById('loader');
+    setTimeout(() => {
+      loaderEl.classList.add('fade-out');
+      setTimeout(() => loaderEl.classList.add('removed'), 1200);
+    }, 2200);
 
     function openMedia() {
       mediaOpen = true;
