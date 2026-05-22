@@ -20,9 +20,6 @@
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
 
-    body.media-open {
-      overflow-y: auto;
-    }
 
     /* ── Video background ── */
     .video-bg {
@@ -94,18 +91,40 @@
       padding: 2rem;
     }
 
-    /* ── Media list ── */
+    /* ── Media section ── */
     .media-section {
-      display: none;
-      width: 100%;
-      max-width: 680px;
-      padding: 0 2rem 5rem;
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+      width: min(90vw, 640px);
       text-align: left;
       color: #fff;
     }
 
     .media-section.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .media-close {
       display: block;
+      text-align: right;
+      margin-bottom: 1.5rem;
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 1.2rem;
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      letter-spacing: 0.15em;
+      cursor: pointer;
+      padding: 0;
+      transition: color 0.3s ease;
+    }
+
+    .media-close:hover {
+      color: #fff;
     }
 
     .media-list {
@@ -131,7 +150,6 @@
       font-weight: 300;
       letter-spacing: 0.04em;
       transition: opacity 0.3s ease;
-      gap: 0;
     }
 
     .media-list a:hover {
@@ -236,8 +254,8 @@
       <a href="https://www.instagram.com/sylvanr/" target="_blank" rel="noopener">Life</a>
       <a href="#" id="mediaToggle">Selected Media</a>
     </nav>
-    </div><!-- /.hero -->
     <div class="media-section" id="mediaSection">
+      <button class="media-close" id="mediaClose">× close</button>
       <ul class="media-list">
         <li>
           <a href="https://spikeartmagazine.com/articles/news-spike-87-everythings-computer-out-now" target="_blank" rel="noopener">
@@ -266,6 +284,7 @@
         </li>
       </ul>
     </div>
+    </div><!-- /.hero -->
   </div>
 
   <script>
@@ -309,7 +328,20 @@
 
     const mediaToggle = document.getElementById('mediaToggle');
     const mediaSection = document.getElementById('mediaSection');
+    const mediaClose = document.getElementById('mediaClose');
     let mediaOpen = false;
+
+    function openMedia() {
+      mediaOpen = true;
+      linksEl.classList.remove('visible');
+      setTimeout(() => mediaSection.classList.add('visible'), 300);
+    }
+
+    function closeMedia() {
+      mediaOpen = false;
+      mediaSection.classList.remove('visible');
+      setTimeout(() => linksEl.classList.add('visible'), 300);
+    }
 
     // ── Name / links toggle ──
     nameEl.addEventListener('click', () => {
@@ -322,12 +354,12 @@
     mediaToggle.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
-      mediaOpen = !mediaOpen;
-      mediaSection.classList.toggle('visible', mediaOpen);
-      document.body.classList.toggle('media-open', mediaOpen);
-      if (mediaOpen) {
-        setTimeout(() => mediaSection.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
-      }
+      openMedia();
+    });
+
+    mediaClose.addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeMedia();
     });
 
     // ── Helpers ──
