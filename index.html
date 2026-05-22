@@ -46,23 +46,20 @@
       object-fit: cover;
     }
 
-    /* Hide all native video controls on iOS/Android */
-    .video-bg video::-webkit-media-controls,
-    .video-bg video::-webkit-media-controls-panel,
-    .video-bg video::-webkit-media-controls-play-button,
-    .video-bg video::-webkit-media-controls-start-playback-button,
-    .video-bg video::-webkit-media-controls-overlay-play-button,
-    .video-bg video::-webkit-media-controls-overlay-enclosure {
-      display: none !important;
-      -webkit-appearance: none;
-      opacity: 0 !important;
+    /* Transparent blocker — sits above the video, hides native play button */
+    .video-blocker {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background: transparent;
+      pointer-events: none;
     }
 
     /* Dark cinematic overlay — frames the video square */
     .video-overlay {
       position: fixed;
       inset: 0;
-      z-index: 1;
+      z-index: 2;
       background: radial-gradient(
         ellipse 52% 52% at center,
         rgba(0, 0, 0, 0) 0%,
@@ -71,10 +68,26 @@
       pointer-events: none;
     }
 
+    /* SVG line overlay */
+    .line-overlay {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 3;
+      pointer-events: none;
+      opacity: 0.12;
+    }
+
+    .line-overlay path, .line-overlay circle {
+      fill: none;
+      stroke: #fff;
+    }
+
     /* ── Content ── */
     .content {
       position: relative;
-      z-index: 2;
+      z-index: 4;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -218,31 +231,14 @@
     <video id="bgVideo" autoplay muted loop playsinline webkit-playsinline preload="auto" disablepictureinpicture disableremoteplayback x-webkit-airplay="deny">
       <source src="background-bounce.mp4" type="video/mp4">
     </video>
+    <div class="video-blocker"></div>
   </div>
 
   <!-- Dark overlay -->
   <div class="video-overlay"></div>
 
   <!-- Line overlay -->
-  <svg class="line-overlay" id="lineOverlay" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <style>
-        .line-overlay {
-          position: fixed;
-          inset: 0;
-          width: 100%;
-          height: 100%;
-          z-index: 1;
-          pointer-events: none;
-          opacity: 0.12;
-        }
-        .line-overlay path, .line-overlay circle {
-          fill: none;
-          stroke: #fff;
-        }
-      </style>
-    </defs>
-  </svg>
+  <svg class="line-overlay" id="lineOverlay" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg"></svg>
 
   <!-- Content -->
   <div class="content">
