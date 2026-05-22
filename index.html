@@ -46,15 +46,6 @@
       object-fit: cover;
     }
 
-    /* Transparent blocker — sits above the video, hides native play button */
-    .video-blocker {
-      position: absolute;
-      inset: 0;
-      z-index: 1;
-      background: transparent;
-      pointer-events: none;
-    }
-
     /* Dark cinematic overlay — frames the video square */
     .video-overlay {
       position: fixed;
@@ -110,9 +101,15 @@
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.5s ease;
-      width: min(90vw, 640px);
+      width: 90vw;
       text-align: left;
       color: #fff;
+    }
+
+    @media (min-width: 768px) {
+      .media-section {
+        width: 40vw;
+      }
     }
 
     .media-section.visible {
@@ -154,12 +151,11 @@
 
     .media-list a {
       display: flex;
-      flex-wrap: wrap;
-      align-items: baseline;
+      flex-direction: column;
+      gap: 0.3rem;
       padding: 1.1rem 0;
       text-decoration: none;
       color: rgba(255, 255, 255, 0.85);
-      font-size: clamp(0.75rem, 1.6vw, 0.9rem);
       font-weight: 300;
       letter-spacing: 0.04em;
       transition: opacity 0.3s ease;
@@ -169,9 +165,19 @@
       opacity: 0.6;
     }
 
+    .media-byline {
+      font-size: clamp(0.7rem, 1.4vw, 0.8rem);
+      color: rgba(255, 255, 255, 0.5);
+      letter-spacing: 0.1em;
+    }
+
+    .media-title {
+      font-size: clamp(0.8rem, 1.6vw, 0.95rem);
+    }
+
     .media-sep {
-      color: rgba(255, 255, 255, 0.85);
-      margin: 0 0.55em;
+      margin: 0 0.5em;
+      opacity: 0.4;
     }
 
     .name {
@@ -378,10 +384,10 @@
 
   <!-- Video background -->
   <div class="video-bg">
-    <video id="bgVideo" autoplay muted loop playsinline webkit-playsinline preload="auto" disablepictureinpicture disableremoteplayback x-webkit-airplay="deny">
+    <video id="bgVideo" autoplay muted loop playsinline webkit-playsinline preload="auto" disablepictureinpicture disableremoteplayback x-webkit-airplay="deny"
+      poster="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==">
       <source src="background-bounce.mp4" type="video/mp4">
     </video>
-    <div class="video-blocker"></div>
   </div>
 
   <!-- Dark overlay -->
@@ -405,27 +411,32 @@
       <ul class="media-list">
         <li>
           <a href="https://spikeartmagazine.com/articles/news-spike-87-everythings-computer-out-now" target="_blank" rel="noopener">
-            Spike Art Magazine<span class="media-sep">—</span>Apr 2026<span class="media-sep">—</span>Spike #87: Everything's Computer
+            <span class="media-byline">Spike Art Magazine<span class="media-sep">—</span>Apr 2026</span>
+            <span class="media-title">Spike #87: Everything's Computer</span>
           </a>
         </li>
         <li>
           <a href="https://www.dazeddigital.com/art-photography/article/69674/1/radically-rethink-what-means-to-make-art-restless-egg-technology-berlin-deepmind" target="_blank" rel="noopener">
-            Dazed<span class="media-sep">—</span>Feb 2026<span class="media-sep">—</span>This collective is radically rethinking what it means to make art
+            <span class="media-byline">Dazed<span class="media-sep">—</span>Feb 2026</span>
+            <span class="media-title">This collective is radically rethinking what it means to make art</span>
           </a>
         </li>
         <li>
           <a href="https://www.mozillafoundation.org/en/nothing-personal/the-post-naive-internet-era/" target="_blank" rel="noopener">
-            Mozilla Foundation<span class="media-sep">—</span>Oct 2025<span class="media-sep">—</span>Welcome to the Post-Naive Internet Era
+            <span class="media-byline">Mozilla Foundation<span class="media-sep">—</span>Oct 2025</span>
+            <span class="media-title">Welcome to the Post-Naive Internet Era</span>
           </a>
         </li>
         <li>
           <a href="https://open.spotify.com/episode/6dQpidIBahtnXVgLoyWMyM?si=8d517a191c034f27" target="_blank" rel="noopener">
-            Humans in the Loop<span class="media-sep">—</span>Aug 2025<span class="media-sep">—</span>Artist founders and figuring out what AI is really for
+            <span class="media-byline">Humans in the Loop<span class="media-sep">—</span>Aug 2025</span>
+            <span class="media-title">Artist founders and figuring out what AI is really for</span>
           </a>
         </li>
         <li>
           <a href="https://reader.futureartecosystems.org/briefing/fae5" target="_blank" rel="noopener">
-            Serpentine / Future Art Ecosystems<span class="media-sep">—</span>Jun 2025<span class="media-sep">—</span>Art x Creative R&D
+            <span class="media-byline">Serpentine / Future Art Ecosystems<span class="media-sep">—</span>Jun 2025</span>
+            <span class="media-title">Art x Creative R&D</span>
           </a>
         </li>
       </ul>
@@ -434,36 +445,27 @@
   </div>
 
   <script>
-    // ── Force video autoplay on all devices ──
+    // ── Video autoplay ──
+    // The play button on iOS is a system-level UI rendered above the webpage.
+    // CSS pseudo-elements and DOM overlays cannot reach it. The only fix is
+    // ensuring the video is already playing before it's ever visible.
+    // Strategy: call play() immediately (video is hidden under the loader),
+    // and again on the first user gesture in case autoplay was blocked.
     const vid = document.getElementById('bgVideo');
     vid.muted = true;
+    vid.play().catch(() => {});
 
-    function tryPlay() {
-      const p = vid.play();
-      if (p !== undefined) p.catch(() => {});
-    }
+    function tryPlay() { vid.play().catch(() => {}); }
 
-    tryPlay();
-    document.addEventListener('DOMContentLoaded', tryPlay);
-    window.addEventListener('load', tryPlay);
-
-    // If autoplay was blocked, start on first user interaction
-    function playOnce() {
+    // First user gesture fallback (belt-and-braces for strict autoplay policies)
+    const gestureEvents = ['touchstart', 'touchend', 'pointerdown', 'click'];
+    function playOnGesture() {
       tryPlay();
-      if (!vid.paused) {
-        document.removeEventListener('touchstart', playOnce);
-        document.removeEventListener('click', playOnce);
-        document.removeEventListener('scroll', playOnce);
-      }
+      if (!vid.paused) gestureEvents.forEach(e => document.removeEventListener(e, playOnGesture));
     }
-    document.addEventListener('touchstart', playOnce, { once: false, passive: true });
-    document.addEventListener('click', playOnce);
-    document.addEventListener('scroll', playOnce, { passive: true });
+    gestureEvents.forEach(e => document.addEventListener(e, playOnGesture, { passive: true }));
 
-    // Re-trigger if page becomes visible again (e.g. tab switch)
-    document.addEventListener('visibilitychange', () => {
-      if (!document.hidden) tryPlay();
-    });
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) tryPlay(); });
 
     const nameEl = document.getElementById('name');
     const linksEl = document.getElementById('links');
