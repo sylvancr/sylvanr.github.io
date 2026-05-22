@@ -21,7 +21,7 @@
     }
 
 
-    /* ── Video background ── */
+    /* ── GIF background ── */
     .video-bg {
       position: fixed;
       top: 50%;
@@ -40,7 +40,7 @@
       }
     }
 
-    .video-bg video {
+    .video-bg img {
       width: 100%;
       height: 100%;
       object-fit: cover;
@@ -382,12 +382,9 @@
     </div>
   </div>
 
-  <!-- Video background -->
+  <!-- GIF background -->
   <div class="video-bg">
-    <video id="bgVideo" autoplay muted loop playsinline webkit-playsinline preload="auto" disablepictureinpicture disableremoteplayback x-webkit-airplay="deny"
-      poster="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==">
-      <source src="background-bounce.mp4" type="video/mp4">
-    </video>
+    <img src="background-bounce.gif" alt="" aria-hidden="true">
   </div>
 
   <!-- Dark overlay -->
@@ -445,27 +442,6 @@
   </div>
 
   <script>
-    // ── Video autoplay ──
-    // The play button on iOS is a system-level UI rendered above the webpage.
-    // CSS pseudo-elements and DOM overlays cannot reach it. The only fix is
-    // ensuring the video is already playing before it's ever visible.
-    // Strategy: call play() immediately (video is hidden under the loader),
-    // and again on the first user gesture in case autoplay was blocked.
-    const vid = document.getElementById('bgVideo');
-    vid.muted = true;
-    vid.play().catch(() => {});
-
-    function tryPlay() { vid.play().catch(() => {}); }
-
-    // First user gesture fallback (belt-and-braces for strict autoplay policies)
-    const gestureEvents = ['touchstart', 'touchend', 'pointerdown', 'click'];
-    function playOnGesture() {
-      tryPlay();
-      if (!vid.paused) gestureEvents.forEach(e => document.removeEventListener(e, playOnGesture));
-    }
-    gestureEvents.forEach(e => document.addEventListener(e, playOnGesture, { passive: true }));
-
-    document.addEventListener('visibilitychange', () => { if (!document.hidden) tryPlay(); });
 
     const nameEl = document.getElementById('name');
     const linksEl = document.getElementById('links');
