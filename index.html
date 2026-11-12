@@ -103,6 +103,7 @@
       align-items: center;
       justify-content: center;
       height: 100vh;
+      height: 100dvh; /* match the visible screen on phones, so the name sits in the middle */
       width: 100%;
       color: #fff;
       text-align: center;
@@ -572,11 +573,20 @@
     const bioRing = document.getElementById('bioRing');
     const bioText = document.getElementById('bioText');
     const bioTextOuter = document.getElementById('bioTextOuter');
+    // Measure on a straight, hidden copy of the text: Safari/WebKit misreports
+    // the length of text laid on a circular path.
     function fitBio() {
       const target = 2 * Math.PI * 200 * 0.94;
-      bioText.style.fontSize = '11px';
-      const len = bioText.getComputedTextLength();
-      if (len > 0) bioText.style.fontSize = (11 * target / len).toFixed(2) + 'px';
+      const probe = document.createElementNS(NS, 'text');
+      probe.textContent = bioText.textContent;
+      probe.setAttribute('visibility', 'hidden');
+      probe.style.fontSize = '11px';
+      bioText.parentNode.appendChild(probe);
+      const len = probe.getComputedTextLength();
+      probe.remove();
+      let size = len > 0 ? 11 * target / len : 24;
+      size = Math.min(Math.max(size, 14), 28);
+      bioText.style.fontSize = size.toFixed(2) + 'px';
       bioTextOuter.style.fontSize = bioText.style.fontSize;
     }
     fitBio();
