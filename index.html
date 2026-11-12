@@ -61,12 +61,17 @@
 
     /* SVG line overlay */
     .line-overlay {
+      transition: opacity 1.8s ease;
       position: fixed;
       inset: 0;
       width: 100%;
       height: 100%;
       z-index: 3;
       pointer-events: none;
+      opacity: 0;
+    }
+
+    .line-overlay.visible {
       opacity: 0.12;
     }
 
@@ -236,10 +241,10 @@
       position: absolute;
       top: 50%;
       left: 50%;
-      width: min(82vw, 24rem);
-      height: min(82vw, 24rem);
-      margin-top: calc(min(82vw, 24rem) / -2);
-      margin-left: calc(min(82vw, 24rem) / -2);
+      width: min(98vw, 29rem);
+      height: min(98vw, 29rem);
+      margin-top: calc(min(98vw, 29rem) / -2);
+      margin-left: calc(min(98vw, 29rem) / -2);
       pointer-events: none;
       transition: opacity 0.6s ease;
     }
@@ -249,11 +254,17 @@
     }
 
     .bio-ring svg {
+      position: absolute;
+      inset: 0;
       display: block;
       width: 100%;
       height: 100%;
       overflow: visible;
       animation: bio-spin 120s linear infinite;
+    }
+
+    .bio-ring svg.bio-outer {
+      animation: bio-spin 180s linear infinite reverse;
     }
 
     .bio-ring text {
@@ -269,7 +280,7 @@
     }
 
     @media (prefers-reduced-motion: reduce) {
-      .bio-ring svg { animation: none; }
+      .bio-ring svg, .bio-ring svg.bio-outer { animation: none; }
     }
 
     .visually-hidden {
@@ -449,13 +460,19 @@
   <div class="content">
     <div class="hero">
     <h1 class="name" id="name">Sylvan Rackham</h1>
-    <p class="visually-hidden">Sylvan Rackham. He orbits technology, culture, and the sublime feeling of looking directly into the sun.</p>
+    <p class="visually-hidden">Sylvan Rackham orbits technology, culture, and the sublime feeling of looking directly into the sun. He is a founding director of Stella Matutina and previously founded Restless Egg.</p>
     <div class="bio-ring" id="bioRing" aria-hidden="true">
-      <svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+      <svg class="bio-inner" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg">
         <defs>
-          <path id="bioCircle" d="M 250 50 A 200 200 0 1 1 249.99 50" />
+          <path id="bioCircle" d="M 300 100 A 200 200 0 1 1 299.99 100" />
         </defs>
-        <text id="bioText"><textPath href="#bioCircle">He orbits technology, culture, and the sublime feeling of looking directly into the sun.</textPath></text>
+        <text id="bioText"><textPath href="#bioCircle">... orbits technology, culture, and the sublime feeling of looking directly into the sun.</textPath></text>
+      </svg>
+      <svg class="bio-outer" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <path id="bioCircleOuter" d="M 300 55 A 245 245 0 1 1 299.99 55" />
+        </defs>
+        <text id="bioTextOuter"><textPath href="#bioCircleOuter">He is a founding director of Stella Matutina and previously founded Restless Egg.</textPath></text>
       </svg>
     </div>
     <nav class="links" id="links">
@@ -545,11 +562,13 @@
     // ── Bio ring: size the text to wrap the circle, leaving a small gap ──
     const bioRing = document.getElementById('bioRing');
     const bioText = document.getElementById('bioText');
+    const bioTextOuter = document.getElementById('bioTextOuter');
     function fitBio() {
       const target = 2 * Math.PI * 200 * 0.94;
       bioText.style.fontSize = '11px';
       const len = bioText.getComputedTextLength();
       if (len > 0) bioText.style.fontSize = (11 * target / len).toFixed(2) + 'px';
+      bioTextOuter.style.fontSize = bioText.style.fontSize;
     }
     fitBio();
     if (document.fonts) document.fonts.ready.then(fitBio);
@@ -559,6 +578,7 @@
       menuOpen = true;
       nameEl.classList.add('hidden');
       bioRing.classList.add('hidden');
+      svg.classList.add('visible');
       setTimeout(() => linksEl.classList.add('visible'), 300);
     });
 
@@ -782,7 +802,7 @@
       // Handle name/links toggle
       if (menuOpen && !e.target.closest('#links') && !e.target.closest('#name')) {
         linksEl.classList.remove('visible');
-        setTimeout(() => { nameEl.classList.remove('hidden'); bioRing.classList.remove('hidden'); menuOpen = false; }, 300);
+        setTimeout(() => { nameEl.classList.remove('hidden'); bioRing.classList.remove('hidden'); svg.classList.remove('visible'); menuOpen = false; }, 300);
       }
 
       // Morph lines
