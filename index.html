@@ -236,10 +236,10 @@
       position: absolute;
       top: 50%;
       left: 50%;
-      width: min(94vw, 30rem);
-      height: min(94vw, 30rem);
-      margin-top: calc(min(94vw, 30rem) / -2);
-      margin-left: calc(min(94vw, 30rem) / -2);
+      width: min(82vw, 24rem);
+      height: min(82vw, 24rem);
+      margin-top: calc(min(82vw, 24rem) / -2);
+      margin-left: calc(min(82vw, 24rem) / -2);
       pointer-events: none;
       transition: opacity 0.6s ease;
     }
@@ -257,11 +257,11 @@
     }
 
     .bio-ring text {
-      fill: rgba(255, 255, 255, 0.72);
+      fill: rgba(255, 255, 255, 0.82);
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       font-weight: 300;
       font-size: 11px;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.1em;
     }
 
     @keyframes bio-spin {
@@ -449,13 +449,13 @@
   <div class="content">
     <div class="hero">
     <h1 class="name" id="name">Sylvan Rackham</h1>
-    <p class="visually-hidden">Sylvan Rackham is a founding director of Stella Matutina, previously founded Restless Egg. His work and life orbit technology, culture, and the sublime feeling of looking directly into the sun.</p>
+    <p class="visually-hidden">Sylvan Rackham. He orbits technology, culture, and the sublime feeling of looking directly into the sun.</p>
     <div class="bio-ring" id="bioRing" aria-hidden="true">
       <svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <path id="bioCircle" d="M 250 50 A 200 200 0 1 1 249.99 50" />
         </defs>
-        <text id="bioText"><textPath href="#bioCircle">...is a founding director of Stella Matutina, previously founded Restless Egg. His work and life orbit technology, culture, and the sublime feeling of looking directly into the sun.</textPath></text>
+        <text id="bioText"><textPath href="#bioCircle">He orbits technology, culture, and the sublime feeling of looking directly into the sun.</textPath></text>
       </svg>
     </div>
     <nav class="links" id="links">
@@ -546,7 +546,7 @@
     const bioRing = document.getElementById('bioRing');
     const bioText = document.getElementById('bioText');
     function fitBio() {
-      const target = 2 * Math.PI * 200 * 0.96;
+      const target = 2 * Math.PI * 200 * 0.94;
       bioText.style.fontSize = '11px';
       const len = bioText.getComputedTextLength();
       if (len > 0) bioText.style.fontSize = (11 * target / len).toFixed(2) + 'px';
