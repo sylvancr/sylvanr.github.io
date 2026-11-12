@@ -476,13 +476,13 @@
         <defs>
           <path id="bioCircle" d="M 300 100 A 200 200 0 1 1 299.99 100" />
         </defs>
-        <text id="bioText"><textPath href="#bioCircle">... is a founding director of Stella Matutina and previously founded Restless Egg.</textPath></text>
+        <text id="bioText"><textPath href="#bioCircle">...is a founding director of Stella Matutina and previously founded Restless Egg</textPath></text>
       </svg>
       <svg class="bio-outer" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <path id="bioCircleOuter" d="M 300 55 A 245 245 0 1 1 299.99 55" />
         </defs>
-        <text id="bioTextOuter"><textPath href="#bioCircleOuter">... orbits technology, culture, and the sublime feeling of looking directly into the sun.</textPath></text>
+        <text id="bioTextOuter"><textPath href="#bioCircleOuter">...orbits technology, culture, and the sublime feeling of looking directly into the sun</textPath></text>
       </svg>
     </div>
     <nav class="links" id="links">
@@ -581,8 +581,11 @@
       probe.textContent = bioText.textContent;
       probe.setAttribute('visibility', 'hidden');
       probe.style.fontSize = '11px';
+      // Measure without letter-spacing and add it back by hand: WebKit leaves
+      // it out of getComputedTextLength, Chromium includes it.
+      probe.style.letterSpacing = '0';
       bioText.parentNode.appendChild(probe);
-      const len = probe.getComputedTextLength();
+      const len = probe.getComputedTextLength() + probe.textContent.length * 11 * 0.1;
       probe.remove();
       let size = len > 0 ? 11 * target / len : 24;
       size = Math.min(Math.max(size, 14), 28);
